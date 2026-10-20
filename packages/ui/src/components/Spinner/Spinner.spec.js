@@ -14,4 +14,10 @@ describe('Spinner', () => {
     render(Spinner, { props: { label: 'Saving', size: 'lg' } })
     expect(screen.getByRole('status')).toHaveTextContent('Saving')
   })
+
+  it('can inherit the surrounding text color', () => {
+    render(Spinner, { props: { color: 'inherit' } })
+    expect(screen.getByRole('status')).toHaveClass('text-current')
+    expect(screen.getByRole('status')).not.toHaveClass('text-secondary-label')
+  })
 })

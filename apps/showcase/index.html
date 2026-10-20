@@ -16,7 +16,37 @@
   </head>
   <body class="bg-grouped">
     <noscript>This app needs JavaScript enabled.</noscript>
-    <div id="app"></div>
+    <!-- Shown until the app mounts and replaces it. Inline so it appears before any JS runs. -->
+    <div id="app">
+      <div class="boot" role="status" aria-label="Loading">
+        <span class="boot-spinner"></span>
+      </div>
+    </div>
+    <style>
+      .boot {
+        display: grid;
+        min-height: 100dvh;
+        place-items: center;
+      }
+      .boot-spinner {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid rgb(120 120 128 / 0.25);
+        border-top-color: #0066d6;
+        animation: boot-spin 0.8s linear infinite;
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .boot-spinner {
+          animation-duration: 2.4s;
+        }
+      }
+    </style>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

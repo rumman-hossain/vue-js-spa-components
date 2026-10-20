@@ -2,7 +2,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { session } from '@/api/session.js'
 import { usersApi } from '@/api/users.js'
-import { db } from '@/mocks/db.js'
+import { db, setRefreshSession } from '@/mocks/db.js'
 import { useAuthStore } from './auth.js'
 
 const admin = { email: 'admin@example.com', password: 'demo-password' }
@@ -16,8 +16,11 @@ describe('auth store', () => {
     expect(auth.isAuthenticated).toBe(true)
     expect(auth.user?.role).toBe('admin')
     expect(session.getAccessToken()).toMatch(/^mock-access-/)
-    expect(localStorage.length).toBe(0)
-    expect(sessionStorage.length).toBe(0)
+    const token = /** @type {string} */ (session.getAccessToken())
+    const stored = [localStorage, sessionStorage].flatMap((storage) =>
+      Object.keys(storage).map((key) => storage.getItem(key)),
+    )
+    expect(stored.some((value) => value?.includes(token))).toBe(false)
   })
 
   it('rejects wrong credentials with a stable error code', async () => {
@@ -77,7 +80,7 @@ describe('auth store', () => {
     const auth = useAuthStore()
     await auth.signIn(admin)
     db.tokens.clear()
-    db.refreshSession = null
+    setRefreshSession(null)
 
     await expect(usersApi.list({ page: 1 })).rejects.toMatchObject({ code: 'unauthorized' })
     expect(auth.isAuthenticated).toBe(false)

@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from 'msw'
 import { env } from '@/config/env.js'
-import { db, PASSWORD } from './db.js'
+import { db, PASSWORD, setRefreshSession } from './db.js'
 import { lab } from './lab.js'
 
 /** @typedef {import('@/api/users.js').User} User */
@@ -45,21 +45,21 @@ function toSessionUser(user) {
  */
 function validateUserInput(body, excludeId) {
   const input = /** @type {Record<string, any>} */ (body ?? {})
+  /** Field error values are stable codes (required | invalid | taken), never display text. */
   /** @type {Record<string, string>} */
   const fieldErrors = {}
   const email = String(input.email ?? '')
     .trim()
     .toLowerCase()
-  if (!String(input.name ?? '').trim()) fieldErrors.name = 'Name is required.'
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fieldErrors.email = 'Email is invalid.'
+  if (!String(input.name ?? '').trim()) fieldErrors.name = 'required'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) fieldErrors.email = 'invalid'
   else if (db.users.some((user) => user.email === email && user.id !== excludeId)) {
-    fieldErrors.email = 'This email is already registered.'
+    fieldErrors.email = 'taken'
   }
-  if (!['admin', 'viewer'].includes(input.role)) fieldErrors.role = 'Role is invalid.'
-  if (!['active', 'invited', 'suspended'].includes(input.status))
-    fieldErrors.status = 'Status is invalid.'
+  if (!['admin', 'viewer'].includes(input.role)) fieldErrors.role = 'invalid'
+  if (!['active', 'invited', 'suspended'].includes(input.status)) fieldErrors.status = 'invalid'
   if (!Number.isInteger(input.monthlyQuota) || input.monthlyQuota < 0) {
-    fieldErrors.monthlyQuota = 'Quota must be a whole number of 0 or more.'
+    fieldErrors.monthlyQuota = 'invalid'
   }
   if (Object.keys(fieldErrors).length) return { fieldErrors }
   return {
@@ -107,7 +107,7 @@ export const handlers = [
     }
     if (user.status === 'suspended') return fail(403, 'account_suspended', 'Account is suspended.')
     db.failedSignIns.delete(key)
-    db.refreshSession = user.id
+    setRefreshSession(user.id)
     return HttpResponse.json({ accessToken: issueToken(user.id), user: toSessionUser(user) })
   }),
 
@@ -117,7 +117,7 @@ export const handlers = [
   }),
 
   http.post(api('/auth/sign-out'), () => {
-    db.refreshSession = null
+    setRefreshSession(null)
     db.tokens.clear()
     return new HttpResponse(null, { status: 204 })
   }),
@@ -221,7 +221,7 @@ export const handlers = [
 
   http.get(api('/metrics/activity'), ({ request }) => {
     if (!authenticate(request)) return fail(401, 'unauthorized', 'Sign in required.')
-    const actions = ['signed in', 'updated', 'invited', 'exported', 'changed role of']
+    const actions = ['signedIn', 'updated', 'invited', 'exported', 'changedRole']
     const items = Array.from({ length: 8 }, (_, i) => {
       const actor = db.users[(db.metricsTick + i) % db.users.length]
       const target = db.users[(db.metricsTick + i * 7 + 3) % db.users.length]

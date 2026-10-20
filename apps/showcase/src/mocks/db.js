@@ -102,13 +102,39 @@ function seedUsers() {
 
 export const PASSWORD = 'demo-password'
 
+/**
+ * The mock server keeps the refresh "cookie" in its own sessionStorage so a page reload keeps you
+ * signed in, as a real httpOnly cookie would. This is server-side state of the fake backend:
+ * application code never reads it, and the app's access token stays in memory only.
+ */
+const REFRESH_KEY = 'mock-api:refresh-session'
+
+function readRefreshSession() {
+  try {
+    return sessionStorage.getItem(REFRESH_KEY)
+  } catch {
+    return null
+  }
+}
+
+/** @param {string | null} userId */
+export function setRefreshSession(userId) {
+  db.refreshSession = userId
+  try {
+    if (userId) sessionStorage.setItem(REFRESH_KEY, userId)
+    else sessionStorage.removeItem(REFRESH_KEY)
+  } catch {
+    // Without storage the session simply ends on reload.
+  }
+}
+
 export function createDb() {
   return {
     users: seedUsers(),
     /** access token → user id */
     tokens: /** @type {Map<string, string>} */ (new Map()),
     /** Stands in for the httpOnly refresh cookie: the signed-in user id, or null. */
-    refreshSession: /** @type {string | null} */ (null),
+    refreshSession: /** @type {string | null} */ (readRefreshSession()),
     failedSignIns: /** @type {Map<string, number>} */ (new Map()),
     tokenCounter: 0,
     metricsTick: 0,
@@ -118,5 +144,6 @@ export function createDb() {
 export const db = createDb()
 
 export function resetDb() {
+  setRefreshSession(null)
   Object.assign(db, createDb())
 }

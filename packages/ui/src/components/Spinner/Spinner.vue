@@ -7,6 +7,11 @@ defineProps({
     default: 'md',
     validator: (/** @type {string} */ value) => ['sm', 'md', 'lg'].includes(value),
   },
+  /** `inherit` takes the surrounding text color, e.g. white inside a filled button. */
+  color: {
+    type: /** @type {import('vue').PropType<'muted' | 'inherit'>} */ (String),
+    default: 'muted',
+  },
 })
 
 const SIZES = {
@@ -17,7 +22,11 @@ const SIZES = {
 </script>
 
 <template>
-  <span role="status" class="inline-flex text-secondary-label">
+  <span
+    role="status"
+    class="inline-flex"
+    :class="color === 'inherit' ? 'text-current' : 'text-secondary-label'"
+  >
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"

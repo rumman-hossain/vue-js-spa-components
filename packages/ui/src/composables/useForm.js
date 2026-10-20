@@ -1,4 +1,4 @@
-import { computed, reactive, ref, toRaw } from 'vue'
+import { computed, nextTick, reactive, ref, toRaw } from 'vue'
 
 /**
  * Minimal Standard Schema shape (https://standardschema.dev), implemented by Zod 4, Valibot and
@@ -125,12 +125,14 @@ export function useForm(options) {
 
   /**
    * Props to spread onto a field component: `<TextField v-bind="form.field('email')" />`.
-   * @param {keyof V & string} name
+   * Generic over the key so `modelValue` has that field's own type.
+   * @template {keyof V & string} K
+   * @param {K} name
    */
   function field(name) {
     return {
       name,
-      modelValue: values[name],
+      modelValue: /** @type {V[K]} */ (values[name]),
       /** @param {unknown} value */
       'onUpdate:modelValue': (value) => {
         ;/** @type {Record<string, unknown>} */ (values)[name] = value
@@ -165,14 +167,30 @@ export function useForm(options) {
     submitCount.value = 0
   }
 
+  /**
+   * Moves focus to the first invalid control so keyboard and screen-reader users land on the
+   * problem instead of staying on the submit button.
+   * @param {HTMLFormElement | null} formElement
+   */
+  async function focusFirstError(formElement) {
+    await nextTick()
+    const invalid = formElement?.querySelector('[aria-invalid="true"]')
+    if (invalid instanceof HTMLElement) invalid.focus()
+  }
+
   /** @param {Event} [event] */
   async function handleSubmit(event) {
     event?.preventDefault()
+    // Read now: currentTarget is cleared once the event finishes dispatching.
+    const formElement = event?.currentTarget instanceof HTMLFormElement ? event.currentTarget : null
     if (isSubmitting.value) return // double-click or Enter spam
     submitCount.value += 1
     isSubmitting.value = true
     try {
-      if (!(await validate())) return
+      if (!(await validate())) {
+        await focusFirstError(formElement)
+        return
+      }
       await options.onSubmit(clone(values))
     } finally {
       isSubmitting.value = false

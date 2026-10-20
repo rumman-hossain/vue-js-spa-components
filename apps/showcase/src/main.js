@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import { env } from '@/config/env.js'
 import App from './App.vue'
 import { installErrorHandling } from './app/errors.js'
+import { createAppI18n } from './i18n/index.js'
 import { createAppRouter } from './router/index.js'
 import { useAuthStore } from './stores/auth.js'
 import './styles.css'
@@ -17,6 +18,7 @@ async function bootstrap() {
   const app = createApp(App)
   const pinia = createPinia()
   app.use(pinia)
+  app.use(createAppI18n())
 
   const router = createAppRouter(useAuthStore(pinia))
   app.use(router)

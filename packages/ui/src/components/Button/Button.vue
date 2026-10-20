@@ -81,7 +81,7 @@ const elementAttrs = computed(() =>
       </span>
     </span>
     <span v-if="loading" aria-hidden="true" class="absolute inset-0 grid place-items-center">
-      <Spinner size="sm" class="text-current" />
+      <Spinner size="sm" color="inherit" />
     </span>
   </component>
 </template>

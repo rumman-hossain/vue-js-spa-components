@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/vue'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import { expectNoA11yViolations } from '../../../tests/a11y.js'
-import Select from './Select.vue'
+import SelectField from './SelectField.vue'
 
 const options = [
   { value: 'jp', label: 'Japan' },
@@ -10,9 +10,9 @@ const options = [
   { value: 'xx', label: 'Unavailable', disabled: true },
 ]
 
-describe('Select', () => {
+describe('SelectField', () => {
   it('is a labelled native select with a placeholder', async () => {
-    const { container } = render(Select, {
+    const { container } = render(SelectField, {
       props: { label: 'Country', options, placeholder: 'Choose a country' },
     })
     const select = screen.getByRole('combobox', { name: 'Country' })
@@ -25,7 +25,7 @@ describe('Select', () => {
   it('emits the selected option value', async () => {
     const user = userEvent.setup()
     const onUpdate = vi.fn()
-    render(Select, { props: { label: 'Country', options, 'onUpdate:modelValue': onUpdate } })
+    render(SelectField, { props: { label: 'Country', options, 'onUpdate:modelValue': onUpdate } })
     await user.selectOptions(screen.getByRole('combobox', { name: 'Country' }), 'United States')
     expect(onUpdate).toHaveBeenLastCalledWith('us')
   })
@@ -33,7 +33,7 @@ describe('Select', () => {
   it('keeps numeric values as numbers and follows the parent', async () => {
     const onUpdate = vi.fn()
     const user = userEvent.setup()
-    const { rerender } = render(Select, {
+    const { rerender } = render(SelectField, {
       props: {
         label: 'Size',
         options: [
@@ -55,7 +55,7 @@ describe('Select', () => {
   it('wires hint, error, required and disabled', async () => {
     const onBlur = vi.fn()
     const user = userEvent.setup()
-    const { rerender } = render(Select, {
+    const { rerender } = render(SelectField, {
       props: {
         label: 'Country',
         options,

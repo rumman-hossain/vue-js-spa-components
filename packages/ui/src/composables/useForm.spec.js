@@ -1,4 +1,7 @@
+import { render, screen } from '@testing-library/vue'
+import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { defineComponent } from 'vue'
 import { useForm } from './useForm.js'
 
 /**
@@ -124,5 +127,22 @@ describe('useForm', () => {
     })
     await form.handleSubmit()
     expect(form.formError.value).toBe('Whole form is wrong')
+  })
+
+  it('moves focus to the first invalid field after a failed submit', async () => {
+    const user = userEvent.setup()
+    const Harness = defineComponent({
+      setup: () => ({ form: createForm().form }),
+      template: `
+        <form novalidate @submit="form.handleSubmit">
+          <input aria-label="Email" :aria-invalid="Boolean(form.field('email').error)" />
+          <input aria-label="Password" :aria-invalid="Boolean(form.field('password').error)" />
+          <button type="submit">Save</button>
+        </form>
+      `,
+    })
+    render(Harness)
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await vi.waitFor(() => expect(screen.getByRole('textbox', { name: 'Email' })).toHaveFocus())
   })
 })
