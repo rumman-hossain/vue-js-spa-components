@@ -1,0 +1,5 @@
+/* Prebuilt stylesheet for apps that do not use Tailwind: `import '@vue-js-spa-components/ui/style.css'`. */
+@import 'tailwindcss';
+@import './tokens/theme.css';
+
+@source './components';

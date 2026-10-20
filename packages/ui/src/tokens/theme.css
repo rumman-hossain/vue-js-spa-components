@@ -1,0 +1,264 @@
+/*
+ * Design tokens: the single source of truth for color, type, shape and motion.
+ *
+ * Consumers using Tailwind CSS 4 import this file after `tailwindcss` to get the same utilities
+ * (`bg-background`, `text-secondary-label`, `rounded-card`, `text-headline`, ...).
+ *
+ * Color values follow system-native semantics (label / fill / grouped background) but are tuned so
+ * every text token meets WCAG 2.2 AA (4.5:1) on the backgrounds it is meant for. Values marked
+ * "AA" were checked against `background` and `grouped-background` in the same theme.
+ *
+ * Theme switching:
+ *   - no class on <html>  → follows the OS (`prefers-color-scheme`)
+ *   - `.light` / `.dark`  → explicit choice, wins over the OS
+ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+
+  /* Text */
+  --ui-label: #000000;
+  --ui-secondary-label: #636366; /* AA */
+  --ui-tertiary-label: #8e8e93; /* decorative and disabled only */
+  --ui-placeholder: #6e6e73; /* AA */
+
+  /* Surfaces */
+  --ui-background: #ffffff;
+  --ui-secondary-background: #f2f2f7;
+  --ui-elevated-background: #ffffff;
+  --ui-grouped-background: #f2f2f7;
+  --ui-grouped-row: #ffffff;
+
+  /* Fills for controls (switch track, segmented control, gray buttons) */
+  --ui-fill: rgb(120 120 128 / 0.2);
+  --ui-secondary-fill: rgb(120 120 128 / 0.16);
+  --ui-tertiary-fill: rgb(118 118 128 / 0.12);
+
+  /* Lines */
+  --ui-separator: rgb(60 60 67 / 0.29);
+  --ui-opaque-separator: #c6c6c8;
+  --ui-control-border: #8e8e93; /* 3:1 non-text contrast for input borders */
+
+  /* Accent. `tint` is for text and icons, `tint-fill` sits behind white text. */
+  --ui-tint: #0066d6; /* AA */
+  --ui-tint-fill: #0066d6;
+  --ui-on-tint: #ffffff;
+
+  /* Status */
+  --ui-red: #d70015; /* AA */
+  --ui-green: #1f7a36; /* AA */
+  --ui-orange: #c93400; /* AA */
+  --ui-yellow: #ffcc00;
+
+  --ui-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 8px 24px rgb(0 0 0 / 0.08);
+  --ui-material: rgb(255 255 255 / 0.72);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --ui-label: #ffffff;
+    --ui-secondary-label: #aeaeb2;
+    --ui-tertiary-label: #7c7c80;
+    --ui-placeholder: #98989d;
+    --ui-background: #000000;
+    --ui-secondary-background: #1c1c1e;
+    --ui-elevated-background: #1c1c1e;
+    --ui-grouped-background: #000000;
+    --ui-grouped-row: #1c1c1e;
+    --ui-fill: rgb(120 120 128 / 0.36);
+    --ui-secondary-fill: rgb(120 120 128 / 0.32);
+    --ui-tertiary-fill: rgb(118 118 128 / 0.24);
+    --ui-separator: rgb(84 84 88 / 0.65);
+    --ui-opaque-separator: #38383a;
+    --ui-control-border: #7c7c80;
+    --ui-tint: #4da3ff;
+    --ui-tint-fill: #0a6ad1;
+    --ui-red: #ff6961;
+    --ui-green: #30d158;
+    --ui-orange: #ffb340;
+    --ui-yellow: #ffd60a;
+    --ui-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.5);
+    --ui-material: rgb(28 28 30 / 0.72);
+  }
+}
+
+:root.dark {
+  color-scheme: dark;
+  --ui-label: #ffffff;
+  --ui-secondary-label: #aeaeb2;
+  --ui-tertiary-label: #7c7c80;
+  --ui-placeholder: #98989d;
+  --ui-background: #000000;
+  --ui-secondary-background: #1c1c1e;
+  --ui-elevated-background: #1c1c1e;
+  --ui-grouped-background: #000000;
+  --ui-grouped-row: #1c1c1e;
+  --ui-fill: rgb(120 120 128 / 0.36);
+  --ui-secondary-fill: rgb(120 120 128 / 0.32);
+  --ui-tertiary-fill: rgb(118 118 128 / 0.24);
+  --ui-separator: rgb(84 84 88 / 0.65);
+  --ui-opaque-separator: #38383a;
+  --ui-control-border: #7c7c80;
+  --ui-tint: #4da3ff;
+  --ui-tint-fill: #0a6ad1;
+  --ui-red: #ff6961;
+  --ui-green: #30d158;
+  --ui-orange: #ffb340;
+  --ui-yellow: #ffd60a;
+  --ui-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.5);
+  --ui-material: rgb(28 28 30 / 0.72);
+}
+
+/* Users who ask for more contrast get opaque separators and stronger secondary text. */
+@media (prefers-contrast: more) {
+  :root {
+    --ui-separator: var(--ui-opaque-separator);
+    --ui-secondary-label: var(--ui-label);
+    --ui-control-border: var(--ui-label);
+  }
+}
+
+@theme inline {
+  --color-label: var(--ui-label);
+  --color-secondary-label: var(--ui-secondary-label);
+  --color-tertiary-label: var(--ui-tertiary-label);
+  --color-placeholder: var(--ui-placeholder);
+  --color-background: var(--ui-background);
+  --color-secondary-background: var(--ui-secondary-background);
+  --color-elevated: var(--ui-elevated-background);
+  --color-grouped: var(--ui-grouped-background);
+  --color-grouped-row: var(--ui-grouped-row);
+  --color-fill: var(--ui-fill);
+  --color-secondary-fill: var(--ui-secondary-fill);
+  --color-tertiary-fill: var(--ui-tertiary-fill);
+  --color-separator: var(--ui-separator);
+  --color-control-border: var(--ui-control-border);
+  --color-tint: var(--ui-tint);
+  --color-tint-fill: var(--ui-tint-fill);
+  --color-on-tint: var(--ui-on-tint);
+  --color-danger: var(--ui-red);
+  --color-success: var(--ui-green);
+  --color-warning: var(--ui-orange);
+  --color-highlight: var(--ui-yellow);
+  --shadow-card: var(--ui-shadow);
+}
+
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Hiragino Sans', 'Noto Sans JP',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Type scale in rem so it follows the user's browser font size. [size, line-height, weight] */
+  --text-large-title: 2.125rem;
+  --text-large-title--line-height: 1.2;
+  --text-large-title--font-weight: 700;
+  --text-title-1: 1.75rem;
+  --text-title-1--line-height: 1.22;
+  --text-title-1--font-weight: 700;
+  --text-title-2: 1.375rem;
+  --text-title-2--line-height: 1.27;
+  --text-title-2--font-weight: 700;
+  --text-title-3: 1.25rem;
+  --text-title-3--line-height: 1.25;
+  --text-title-3--font-weight: 600;
+  --text-headline: 1.0625rem;
+  --text-headline--line-height: 1.3;
+  --text-headline--font-weight: 600;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.3;
+  --text-callout: 1rem;
+  --text-callout--line-height: 1.3;
+  --text-subhead: 0.9375rem;
+  --text-subhead--line-height: 1.33;
+  --text-footnote: 0.8125rem;
+  --text-footnote--line-height: 1.38;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.33;
+
+  --radius-control: 0.5rem;
+  --radius-field: 0.625rem;
+  --radius-card: 0.75rem;
+  --radius-sheet: 1rem;
+  --radius-window: 1.375rem;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+
+  --animate-sheet-in: sheet-in 280ms var(--ease-spring);
+  --animate-fade-in: fade-in 180ms var(--ease-standard);
+
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Translucent surface for toolbars, sidebars and popovers. */
+@utility material {
+  background-color: var(--ui-material);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--ui-elevated-background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* One focus style everywhere: visible on keyboard focus, hidden on mouse click. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--ui-tint) 55%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+/* Visually hidden but still read by screen readers. */
+@utility visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--ui-label);
+    background-color: var(--ui-background);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--ui-tint) 30%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

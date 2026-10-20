@@ -14,6 +14,18 @@
     "typecheck": "vue-tsc --noEmit -p jsconfig.json"
   },
   "devDependencies": {
-    "vite": "8.3.4"
+    "@tailwindcss/vite": "4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/user-event": "^14.6.8",
+    "@testing-library/vue": "^8.1.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "axe-core": "^4.14.0",
+    "publint": "^0.3.25",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.4",
+    "vue": "3.5.44"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^1.0.0"
   }
 }
