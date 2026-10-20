@@ -27,7 +27,11 @@ function pathToKey(path) {
   return path.map((part) => String(typeof part === 'object' ? part.key : part)).join('.')
 }
 
-/** @param {unknown} value */
+/**
+ * @template T
+ * @param {T} value
+ * @returns {T}
+ */
 function clone(value) {
   return structuredClone(toRaw(value))
 }

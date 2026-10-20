@@ -45,8 +45,8 @@ describe.each([
     },
   )
 
-  it('white text on the filled accent is at least 4.5:1', () => {
-    expect(contrast(tokens['on-tint'], tokens['tint-fill'])).toBeGreaterThanOrEqual(4.5)
+  it.each(['tint-fill', 'red-fill'])('white text on %s is at least 4.5:1', (fill) => {
+    expect(contrast(tokens['on-tint'], tokens[fill])).toBeGreaterThanOrEqual(4.5)
   })
 
   it('input borders reach 3:1 non-text contrast on the background', () => {

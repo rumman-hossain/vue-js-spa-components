@@ -48,6 +48,7 @@
 
   /* Status */
   --ui-red: #d70015; /* AA */
+  --ui-red-fill: #d70015; /* behind white text */
   --ui-green: #1f7a36; /* AA */
   --ui-orange: #c93400; /* AA */
   --ui-yellow: #ffcc00;
@@ -77,6 +78,8 @@
     --ui-tint: #4da3ff;
     --ui-tint-fill: #0a6ad1;
     --ui-red: #ff6961;
+    --ui-red-fill: #d70015;
+    --ui-red-fill: #d70015;
     --ui-green: #30d158;
     --ui-orange: #ffb340;
     --ui-yellow: #ffd60a;
@@ -105,6 +108,7 @@
   --ui-tint: #4da3ff;
   --ui-tint-fill: #0a6ad1;
   --ui-red: #ff6961;
+  --ui-red-fill: #d70015;
   --ui-green: #30d158;
   --ui-orange: #ffb340;
   --ui-yellow: #ffd60a;
@@ -140,6 +144,7 @@
   --color-tint-fill: var(--ui-tint-fill);
   --color-on-tint: var(--ui-on-tint);
   --color-danger: var(--ui-red);
+  --color-danger-fill: var(--ui-red-fill);
   --color-success: var(--ui-green);
   --color-warning: var(--ui-orange);
   --color-highlight: var(--ui-yellow);
