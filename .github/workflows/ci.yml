@@ -69,6 +69,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - name: Bundle size budget
+        run: pnpm size
       - uses: actions/upload-artifact@v4
         with:
           name: showcase-dist

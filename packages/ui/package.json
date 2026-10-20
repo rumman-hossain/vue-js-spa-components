@@ -12,7 +12,8 @@
   },
   "files": [
     "dist",
-    "src/tokens/theme.css"
+    "src/tokens/theme.css",
+    "README.md"
   ],
   "sideEffects": [
     "**/*.css"
@@ -51,5 +52,17 @@
     "tailwindcss": "4.3.3",
     "vite": "8.3.4",
     "vue": "3.5.44"
-  }
+  },
+  "homepage": "https://rumman-hossain.github.io/vue-js-spa-components/components",
+  "keywords": [
+    "vue",
+    "vue3",
+    "components",
+    "accessibility",
+    "a11y",
+    "tailwindcss",
+    "design-system",
+    "i18n",
+    "ime"
+  ]
 }

@@ -1,5 +1,9 @@
 import { z } from 'zod'
 
+// The production CSP forbids eval. Without this, zod probes `new Function` for its JIT
+// fast path, which the browser reports as a CSP violation (zod then falls back anyway).
+z.config({ jitless: true })
+
 const booleanString = z
   .enum(['true', 'false'])
   .default('false')
