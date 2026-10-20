@@ -18,6 +18,7 @@
     "@testing-library/user-event": "^14.6.8",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^6.0.10",
+    "axe-core": "^4.14.0",
     "msw": "3.0.3",
     "tailwindcss": "4.3.3",
     "vite": "8.3.4"

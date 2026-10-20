@@ -121,4 +121,24 @@ describe('useAsync', () => {
     await nextTick()
     await vi.waitFor(() => expect(result.data.value).toBe('hi'))
   })
+
+  it('leaves the pending state when aborted manually', async () => {
+    const { result } = inScope(() =>
+      useAsync(
+        ({ signal }) =>
+          new Promise((_resolve, reject) =>
+            signal.addEventListener('abort', () =>
+              reject(new DOMException('Aborted', 'AbortError')),
+            ),
+          ),
+      ),
+    )
+    const call = result.execute()
+    expect(result.isPending.value).toBe(true)
+    result.abort()
+    await call
+    expect(result.isPending.value).toBe(false)
+    expect(result.status.value).toBe('idle')
+    expect(result.error.value).toBeNull()
+  })
 })

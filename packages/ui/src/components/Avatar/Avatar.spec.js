@@ -5,11 +5,19 @@ import Avatar from './Avatar.vue'
 import { AVATAR_TINTS, getInitials, hashToIndex } from './avatar.js'
 
 describe('getInitials', () => {
+  it.each([
+    ['山田 太郎', '山田'],
+    ['佐々木 結衣', '佐々'],
+    ['林 蓮', '林'],
+    ['さとう はなこ', 'さと'],
+  ])('shows the family name for the Japanese name %s', (name, expected) => {
+    expect(getInitials(name)).toBe(expected)
+  })
+
   it('takes the first letters of the first and last words', () => {
     expect(getInitials('Ada Lovelace')).toBe('AL')
     expect(getInitials('  grace  brewster murray hopper ')).toBe('GH')
     expect(getInitials('Plato')).toBe('P')
-    expect(getInitials('山田 太郎')).toBe('山太')
     expect(getInitials('')).toBe('')
   })
 

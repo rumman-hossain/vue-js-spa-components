@@ -77,3 +77,21 @@ describe('useTheme', () => {
     expect(() => theme.setMode('sepia')).toThrow('Unknown theme mode')
   })
 })
+
+describe('useTheme across components', () => {
+  it('keeps applying changes after the first calling component unmounts', async () => {
+    vi.resetModules()
+    localStorage.clear()
+    window.matchMedia = vi.fn().mockReturnValue({ matches: false, addEventListener: () => {} })
+    const { useTheme } = await import('./useTheme.js')
+    const { createApp, defineComponent, h } = await import('vue')
+
+    const First = defineComponent({ setup: () => (useTheme(), () => h('div')) })
+    const app = createApp(First)
+    app.mount(document.createElement('div'))
+    app.unmount()
+
+    useTheme().setMode('dark')
+    await vi.waitFor(() => expect(document.documentElement.classList.contains('dark')).toBe(true))
+  })
+})

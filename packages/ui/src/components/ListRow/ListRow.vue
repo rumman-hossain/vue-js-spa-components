@@ -20,6 +20,10 @@ const routerLink = getCurrentInstance()?.appContext.components.RouterLink
 
 /** The interactive element, or `null` for a static row. */
 const target = computed(() => {
+  // A disabled link is not a link: render it as a non-interactive row that says it is disabled.
+  if (props.disabled && (props.href !== undefined || props.to !== undefined)) {
+    return { tag: 'div', bindings: { 'aria-disabled': 'true' } }
+  }
   if (props.to !== undefined && routerLink) return { tag: routerLink, bindings: { to: props.to } }
   if (props.href !== undefined || typeof props.to === 'string') {
     return { tag: 'a', bindings: { href: props.href ?? props.to } }

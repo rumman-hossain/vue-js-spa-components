@@ -1,3 +1,4 @@
+import { useTheme } from '@vue-js-spa-components/ui'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { env } from '@/config/env.js'
@@ -9,6 +10,8 @@ import { useAuthStore } from './stores/auth.js'
 import './styles.css'
 
 async function bootstrap() {
+  useTheme() // apply the saved light/dark choice before the first paint of the app
+
   if (env.enableMocks) {
     // Loaded on demand so a build with a real API never ships the mock backend.
     const { startMockApi } = await import('./mocks/browser.js')

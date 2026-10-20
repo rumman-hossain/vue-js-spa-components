@@ -33,8 +33,11 @@ export function useAsync(fn, options = {}) {
   let controller = null
 
   function abort() {
-    controller?.abort()
+    if (!controller) return
+    controller.abort()
     controller = null
+    // A cancelled call is not an error: fall back to what was shown before it started.
+    status.value = data.value === undefined ? 'idle' : 'success'
   }
 
   /**

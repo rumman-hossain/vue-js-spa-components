@@ -23,7 +23,7 @@ import { useAuthStore } from '@/stores/auth.js'
 
 /** @typedef {import('@/api/users.js').User} User */
 
-const PAGE_SIZE = 10
+const PAGE_SIZES = [10, 25, 50]
 const SORTABLE = ['name', 'email', 'role', 'status', 'monthlyQuota', 'createdAt']
 
 const { t, locale } = useI18n()
@@ -39,31 +39,41 @@ const canEdit = computed(() => auth.hasRole('admin'))
 /** The URL is the source of truth, so reloads, shared links and Back all restore the view. */
 const query = computed(() => {
   const page = Number(route.query.page)
+  const size = Number(route.query.size)
   const sort = String(route.query.sort ?? 'createdAt')
   return {
     page: Number.isInteger(page) && page > 0 ? page : 1,
+    pageSize: PAGE_SIZES.includes(size) ? size : PAGE_SIZES[0],
     search: typeof route.query.search === 'string' ? route.query.search : '',
     sort: SORTABLE.includes(sort) ? sort : 'createdAt',
     order: /** @type {'asc' | 'desc'} */ (route.query.order === 'asc' ? 'asc' : 'desc'),
   }
 })
 
+/** Query changes requested in the same tick, merged so one navigation cannot undo another. */
+let pendingQuery = /** @type {typeof query.value | null} */ (null)
+
 /** @param {Partial<typeof query.value>} changes */
 function updateQuery(changes) {
-  const next = { ...query.value, ...changes }
-  router.replace({
-    query: {
-      page: next.page > 1 ? String(next.page) : undefined,
-      search: next.search || undefined,
-      sort: next.sort !== 'createdAt' ? next.sort : undefined,
-      order: next.order !== 'desc' ? next.order : undefined,
-    },
-  })
+  // e.g. Pagination emits update:pageSize and update:page together; both must land in the URL.
+  const next = { ...(pendingQuery ?? query.value), ...changes }
+  pendingQuery = next
+  router
+    .replace({
+      query: {
+        page: next.page > 1 ? String(next.page) : undefined,
+        size: next.pageSize !== PAGE_SIZES[0] ? String(next.pageSize) : undefined,
+        search: next.search || undefined,
+        sort: next.sort !== 'createdAt' ? next.sort : undefined,
+        order: next.order !== 'desc' ? next.order : undefined,
+      },
+    })
+    .finally(() => {
+      if (pendingQuery === next) pendingQuery = null
+    })
 }
 
-const users = useAsync(({ signal }) =>
-  usersApi.list({ ...query.value, pageSize: PAGE_SIZE }, { signal }),
-)
+const users = useAsync(({ signal }) => usersApi.list(query.value, { signal }))
 watch(query, () => users.execute(), { immediate: true })
 
 /** Rows shown in the table. Kept separately so deletes can be applied optimistically. */
@@ -83,6 +93,11 @@ const sort = computed({
 const page = computed({
   get: () => query.value.page,
   set: (value) => updateQuery({ page: value }),
+})
+// Changing the page size goes back to page 1 so the user never lands past the last page.
+const pageSize = computed({
+  get: () => query.value.pageSize,
+  set: (value) => updateQuery({ pageSize: value, page: 1 }),
 })
 
 const columns = computed(() => [
@@ -179,6 +194,7 @@ async function removeUser(id) {
       manual-sort
       :caption="t('users.caption')"
       caption-hidden
+      max-height="max(18rem, calc(100dvh - 22rem))"
       :loading="users.isPending.value && rows.length === 0"
       :error="users.error.value ? errorMessage(users.error.value) : undefined"
       @retry="users.execute()"
@@ -226,10 +242,17 @@ async function removeUser(id) {
     <Pagination
       v-if="users.data.value && users.data.value.total > 0"
       v-model:page="page"
+      v-model:page-size="pageSize"
       class="mt-4"
       :total="users.data.value.total"
-      :page-size="PAGE_SIZE"
+      :page-size-options="PAGE_SIZES"
       :locale="locale"
+      :label="t('users.pagination.label')"
+      :previous-label="t('users.pagination.previous')"
+      :next-label="t('users.pagination.next')"
+      :page-size-label="t('users.pagination.rowsPerPage')"
+      :page-label="(value) => t('users.pagination.page', { page: value })"
+      :summary="(range) => t('users.pagination.summary', range)"
     />
   </div>
 </template>

@@ -79,4 +79,10 @@ describe('ListRow', () => {
     expect(screen.getByTestId('leading')).toBeInTheDocument()
     expect(screen.getByRole('listitem')).toHaveTextContent('CustomBadge')
   })
+
+  it('renders a disabled link row as non-interactive', () => {
+    render(ListRow, { props: { title: 'Billing', href: '/billing', disabled: true } })
+    expect(screen.queryByRole('link', { name: /Billing/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Billing').closest('[aria-disabled="true"]')).not.toBeNull()
+  })
 })

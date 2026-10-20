@@ -3,49 +3,50 @@
  * Demo credentials (fake, documented in the README): admin@example.com / demo-password.
  */
 
-const FIRST = [
-  'Aiko',
-  'Haruto',
-  'Sakura',
-  'Ren',
-  'Yui',
-  'Sota',
-  'Mei',
-  'Riku',
-  'Hina',
-  'Kaito',
-  'Emma',
-  'Liam',
-  'Noah',
-  'Olivia',
-  'Arif',
-  'Nadia',
-  'Tanvir',
-  'Farhana',
-  'Lucas',
-  'Mia',
+/** Common Japanese family and given names as [kanji/kana, romaji]. Names are family name first. */
+const FAMILY = [
+  ['佐藤', 'sato'],
+  ['鈴木', 'suzuki'],
+  ['高橋', 'takahashi'],
+  ['田中', 'tanaka'],
+  ['渡辺', 'watanabe'],
+  ['伊藤', 'ito'],
+  ['山本', 'yamamoto'],
+  ['中村', 'nakamura'],
+  ['小林', 'kobayashi'],
+  ['加藤', 'kato'],
+  ['吉田', 'yoshida'],
+  ['山口', 'yamaguchi'],
+  ['佐々木', 'sasaki'],
+  ['松本', 'matsumoto'],
+  ['井上', 'inoue'],
+  ['木村', 'kimura'],
+  ['林', 'hayashi'],
+  ['清水', 'shimizu'],
+  ['斎藤', 'saito'],
+  ['森', 'mori'],
 ]
-const LAST = [
-  'Sato',
-  'Suzuki',
-  'Takahashi',
-  'Tanaka',
-  'Watanabe',
-  'Ito',
-  'Yamamoto',
-  'Nakamura',
-  'Kobayashi',
-  'Kato',
-  'Rahman',
-  'Hossain',
-  'Ahmed',
-  'Smith',
-  'Garcia',
-  'Müller',
-  'Dubois',
-  'Rossi',
-  'Kim',
-  'Chen',
+const GIVEN = [
+  ['結衣', 'yui'],
+  ['陽翔', 'haruto'],
+  ['さくら', 'sakura'],
+  ['蓮', 'ren'],
+  ['美咲', 'misaki'],
+  ['大翔', 'hiroto'],
+  ['葵', 'aoi'],
+  ['悠真', 'yuma'],
+  ['陽菜', 'hina'],
+  ['湊', 'minato'],
+  ['凛', 'rin'],
+  ['健太', 'kenta'],
+  ['花子', 'hanako'],
+  ['翔太', 'shota'],
+  ['真央', 'mao'],
+  ['拓海', 'takumi'],
+  ['愛子', 'aiko'],
+  ['大輝', 'daiki'],
+  ['七海', 'nanami'],
+  ['颯', 'hayate'],
 ]
 const STATUSES = /** @type {const} */ (['active', 'active', 'active', 'invited', 'suspended'])
 
@@ -67,7 +68,7 @@ function seedUsers() {
   const users = [
     {
       id: 'u_admin',
-      name: 'Demo Admin',
+      name: '山田 太郎',
       email: 'admin@example.com',
       role: 'admin',
       status: 'active',
@@ -76,7 +77,7 @@ function seedUsers() {
     },
     {
       id: 'u_viewer',
-      name: 'Demo Viewer',
+      name: '鈴木 花子',
       email: 'viewer@example.com',
       role: 'viewer',
       status: 'active',
@@ -85,12 +86,12 @@ function seedUsers() {
     },
   ]
   for (let i = 0; i < 55; i += 1) {
-    const first = FIRST[Math.floor(random() * FIRST.length)]
-    const last = LAST[Math.floor(random() * LAST.length)]
+    const [family, familyRomaji] = FAMILY[Math.floor(random() * FAMILY.length)]
+    const [given, givenRomaji] = GIVEN[Math.floor(random() * GIVEN.length)]
     users.push({
       id: `u_${String(i + 1).padStart(3, '0')}`,
-      name: `${first} ${last}`,
-      email: `${first}.${last}${i}@example.com`.toLowerCase().replace('ü', 'u'),
+      name: `${family} ${given}`,
+      email: `${givenRomaji}.${familyRomaji}${i}@example.com`,
       role: random() > 0.85 ? 'admin' : 'viewer',
       status: STATUSES[Math.floor(random() * STATUSES.length)],
       monthlyQuota: Math.round(random() * 200) * 1000,

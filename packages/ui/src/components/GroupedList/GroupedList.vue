@@ -6,6 +6,11 @@ defineProps({
   header: { type: String, default: undefined },
   /** Explanatory text below the group. */
   footer: { type: String, default: undefined },
+  /** Match the page outline: a group directly under the page title is a level-2 heading. */
+  headingLevel: {
+    type: /** @type {import('vue').PropType<2 | 3 | 4 | 5 | 6>} */ (Number),
+    default: 2,
+  },
 })
 
 const headerId = useId()
@@ -14,13 +19,14 @@ const footerId = useId()
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <h3
+    <component
+      :is="`h${headingLevel}`"
       v-if="header || $slots.header"
       :id="headerId"
       class="px-4 text-footnote font-normal text-secondary-label uppercase"
     >
       <slot name="header">{{ header }}</slot>
-    </h3>
+    </component>
     <!-- role="list" is needed: some browsers drop list semantics once list-style is removed. -->
     <!-- eslint-disable-next-line vuejs-accessibility/no-redundant-roles -->
     <ul

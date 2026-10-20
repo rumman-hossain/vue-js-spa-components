@@ -54,6 +54,11 @@ const props = defineProps({
    * Otherwise rows are sorted here (numbers numerically, text with locale-aware collation).
    */
   manualSort: { type: Boolean, default: false },
+  /**
+   * Any CSS length (e.g. `'60dvh'`). The table then scrolls vertically inside its own region
+   * with the header row pinned, so the page itself does not scroll for long lists.
+   */
+  maxHeight: { type: String, default: undefined },
 })
 
 const emit = defineEmits(['retry'])
@@ -120,6 +125,8 @@ const alignClass = (column) => (column.align === 'end' ? 'text-right' : 'text-le
       tabindex="0"
       :aria-labelledby="captionId"
       class="focus-ring overflow-x-auto rounded-card bg-grouped-row"
+      :class="{ 'overflow-y-auto overscroll-contain': maxHeight }"
+      :style="maxHeight ? { maxHeight } : undefined"
     >
       <table
         class="w-full border-collapse text-subhead text-label"
@@ -143,7 +150,7 @@ const alignClass = (column) => (column.align === 'end' ? 'text-right' : 'text-le
               :aria-sort="ariaSort(column.key)"
               :style="column.width ? { width: column.width } : undefined"
               class="border-b border-separator px-4 py-2.5 text-footnote font-semibold whitespace-nowrap text-secondary-label"
-              :class="alignClass(column)"
+              :class="[alignClass(column), { 'sticky top-0 z-10 bg-grouped-row': maxHeight }]"
             >
               <button
                 v-if="column.sortable"

@@ -135,4 +135,20 @@ describe('DataTable', () => {
     renderTable({ rows: [] }, { empty: '<p>Custom empty</p>' })
     expect(screen.getByText('Custom empty')).toBeInTheDocument()
   })
+
+  it('scrolls inside its own region with a pinned header when maxHeight is set', () => {
+    render(DataTable, {
+      props: {
+        columns: [{ key: 'name', label: 'Name' }],
+        rows: [{ id: 1, name: 'A' }],
+        rowKey: 'id',
+        caption: 'People',
+        maxHeight: '50dvh',
+      },
+    })
+    const region = screen.getByRole('region', { name: 'People' })
+    expect(region).toHaveStyle({ maxHeight: '50dvh' })
+    expect(region).toHaveClass('overflow-y-auto')
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass('sticky')
+  })
 })

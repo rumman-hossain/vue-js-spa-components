@@ -40,4 +40,11 @@ describe('GroupedList', () => {
       'Slotted footer',
     )
   })
+
+  it('renders the header as a level-2 heading by default and accepts other levels', async () => {
+    const { rerender } = render(GroupedList, { props: { header: 'Account' } })
+    expect(screen.getByRole('heading', { name: 'Account', level: 2 })).toBeInTheDocument()
+    await rerender({ header: 'Account', headingLevel: 3 })
+    expect(screen.getByRole('heading', { name: 'Account', level: 3 })).toBeInTheDocument()
+  })
 })

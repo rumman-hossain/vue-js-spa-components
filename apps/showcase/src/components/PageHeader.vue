@@ -8,7 +8,7 @@ defineProps({
 <template>
   <header class="flex flex-wrap items-end justify-between gap-4 pb-6">
     <div class="min-w-0">
-      <h1 class="text-large-title text-label">{{ title }}</h1>
+      <h1 class="text-large-title text-label outline-none">{{ title }}</h1>
       <p v-if="subtitle" class="mt-1 max-w-prose text-subhead text-secondary-label">
         {{ subtitle }}
       </p>

@@ -16,6 +16,35 @@ function readTokens(selector) {
   )
 }
 
+/** Reads `rgb(r g b / a)` tokens such as `--ui-fill`. */
+function readAlphaTokens(/** @type {string} */ selector) {
+  const start = css.indexOf(selector)
+  const block = css.slice(start, css.indexOf('}', start))
+  return Object.fromEntries(
+    [...block.matchAll(/--ui-([\w-]+):\s*rgb\((\d+) (\d+) (\d+) \/ ([\d.]+)\)/g)].map(
+      ([, name, r, g, b, a]) => [
+        name,
+        { rgb: [Number(r), Number(g), Number(b)], alpha: Number(a) },
+      ],
+    ),
+  )
+}
+
+/** @param {string} hex @returns {number[]} */
+const toRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+
+/** @param {number[]} rgb */
+const toHex = (rgb) => `#${rgb.map((c) => Math.round(c).toString(16).padStart(2, '0')).join('')}`
+
+/**
+ * Source-over compositing of a translucent color on an opaque one, as the browser paints it.
+ * @param {number[]} top @param {number} alpha @param {string} bottomHex
+ */
+function composite(top, alpha, bottomHex) {
+  const bottom = toRgb(bottomHex)
+  return toHex(top.map((c, i) => c * alpha + bottom[i] * (1 - alpha)))
+}
+
 /** @param {string} hex */
 function luminance(hex) {
   const [r, g, b] = [1, 3, 5].map((i) => {
@@ -31,13 +60,22 @@ function contrast(a, b) {
   return (light + 0.05) / (dark + 0.05)
 }
 
+/** Tones used as both text color and a translucent background in badges, avatars and buttons. */
+const TONES = ['tint', 'red', 'green', 'orange']
+/** Strongest tinted fill used by components (active state of tinted buttons). */
+const MAX_TINT_ALPHA = 0.2
+
 const TEXT = ['label', 'secondary-label', 'placeholder', 'tint', 'red', 'green', 'orange']
 const SURFACES = ['background', 'secondary-background', 'grouped-background', 'grouped-row']
 
 describe.each([
-  ['light', readTokens(':root {')],
-  ['dark', { ...readTokens(':root {'), ...readTokens(':root.dark {') }],
-])('%s theme contrast (WCAG 2.2 AA)', (_theme, tokens) => {
+  ['light', readTokens(':root {'), readAlphaTokens(':root {')],
+  [
+    'dark',
+    { ...readTokens(':root {'), ...readTokens(':root.dark {') },
+    { ...readAlphaTokens(':root {'), ...readAlphaTokens(':root.dark {') },
+  ],
+])('%s theme contrast (WCAG 2.2 AA)', (_theme, tokens, fills) => {
   it.each(TEXT.flatMap((text) => SURFACES.map((surface) => [text, surface])))(
     '%s text on %s is at least 4.5:1',
     (text, surface) => {
@@ -47,6 +85,21 @@ describe.each([
 
   it.each(['tint-fill', 'red-fill'])('white text on %s is at least 4.5:1', (fill) => {
     expect(contrast(tokens['on-tint'], tokens[fill])).toBeGreaterThanOrEqual(4.5)
+  })
+
+  it.each(TONES.flatMap((tone) => SURFACES.map((surface) => [tone, surface])))(
+    '%s text on its own tint (20 percent) over %s is at least 4.5:1',
+    (tone, surface) => {
+      const background = composite(toRgb(tokens[tone]), MAX_TINT_ALPHA, tokens[surface])
+      expect(contrast(tokens[tone], background)).toBeGreaterThanOrEqual(4.5)
+    },
+  )
+
+  it.each(SURFACES)('accent text on a gray fill over %s is at least 4.5:1', (surface) => {
+    const { rgb, alpha } = fills.fill
+    expect(contrast(tokens.tint, composite(rgb, alpha, tokens[surface]))).toBeGreaterThanOrEqual(
+      4.5,
+    )
   })
 
   it('input borders reach 3:1 non-text contrast on the background', () => {

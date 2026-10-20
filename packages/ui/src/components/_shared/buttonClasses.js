@@ -13,16 +13,16 @@ const VARIANT_CLASSES = {
     danger: 'bg-danger-fill text-on-tint hover:opacity-90 active:opacity-80',
   },
   tinted: {
-    accent: 'bg-tint/15 text-tint hover:bg-tint/20 active:bg-tint/25',
-    danger: 'bg-danger/15 text-danger hover:bg-danger/20 active:bg-danger/25',
+    accent: 'bg-tint/12 text-tint hover:bg-tint/16 active:bg-tint/20',
+    danger: 'bg-danger/12 text-danger hover:bg-danger/16 active:bg-danger/20',
   },
   gray: {
     accent: 'bg-fill text-tint hover:bg-secondary-fill active:bg-tertiary-fill',
     danger: 'bg-fill text-danger hover:bg-secondary-fill active:bg-tertiary-fill',
   },
   plain: {
-    accent: 'text-tint hover:bg-tint/10 active:bg-tint/15',
-    danger: 'text-danger hover:bg-danger/10 active:bg-danger/15',
+    accent: 'text-tint hover:bg-tint/10 active:bg-tint/12',
+    danger: 'text-danger hover:bg-danger/10 active:bg-danger/12',
   },
 }
 

@@ -1,4 +1,4 @@
-import { computed, readonly, ref, watch } from 'vue'
+import { computed, effectScope, readonly, ref, watch } from 'vue'
 
 /** @typedef {'system' | 'light' | 'dark'} ThemeMode */
 
@@ -32,20 +32,24 @@ function init() {
     query.addEventListener('change', (event) => (systemDark.value = event.matches))
   }
 
-  watch(
-    mode,
-    (value) => {
-      const root = document.documentElement
-      root.classList.remove('light', 'dark')
-      if (value !== 'system') root.classList.add(value)
-      try {
-        localStorage.setItem(STORAGE_KEY, value)
-      } catch {
-        // Not persisting is acceptable; the choice still applies for this session.
-      }
-    },
-    { immediate: true },
-  )
+  // Detached scope: the effect must outlive whichever component happened to call useTheme first,
+  // otherwise leaving that page would silently stop theme changes from applying.
+  effectScope(true).run(() => {
+    watch(
+      mode,
+      (value) => {
+        const root = document.documentElement
+        root.classList.remove('light', 'dark')
+        if (value !== 'system') root.classList.add(value)
+        try {
+          localStorage.setItem(STORAGE_KEY, value)
+        } catch {
+          // Not persisting is acceptable; the choice still applies for this session.
+        }
+      },
+      { immediate: true },
+    )
+  })
 }
 
 /**

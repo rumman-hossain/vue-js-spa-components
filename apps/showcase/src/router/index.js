@@ -1,4 +1,4 @@
-import { watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { createAuthGuard } from './guards.js'
 import { routes } from './routes.js'
@@ -24,8 +24,17 @@ export function createAppRouter(auth) {
     },
   )
 
-  router.afterEach((to) => {
+  router.afterEach((to, from, failure) => {
     document.title = to.meta.title ? `${to.meta.title} · Vue SPA Components` : 'Vue SPA Components'
+    // In-app navigation: move focus to the new page's heading so screen readers announce it and
+    // keyboard users start from the top. Skipped on first load and when only the query changes.
+    if (failure || !from.matched.length || to.path === from.path) return
+    nextTick(() => {
+      const heading = document.querySelector('main h1')
+      if (!(heading instanceof HTMLElement)) return
+      heading.tabIndex = -1
+      heading.focus({ preventScroll: true })
+    })
   })
 
   return router

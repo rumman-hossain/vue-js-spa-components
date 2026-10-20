@@ -8,6 +8,15 @@ import { lab } from './lab.js'
 const api = (/** @type {string} */ path) => `${env.apiBaseUrl}${path}`
 const MAX_FAILED_SIGN_INS = 5
 
+/** Japanese-aware ordering for text (kana and kanji), numeric ordering for numbers. */
+const collator = new Intl.Collator('ja', { numeric: true, sensitivity: 'base' })
+
+/** @param {unknown} a @param {unknown} b */
+function compare(a, b) {
+  if (typeof a === 'number' && typeof b === 'number') return a - b
+  return collator.compare(String(a), String(b))
+}
+
 /**
  * @param {number} status
  * @param {string} code
@@ -149,7 +158,7 @@ export const handlers = [
 
     const matches = db.users
       .filter((user) => !search || `${user.name} ${user.email}`.toLowerCase().includes(search))
-      .sort((a, b) => (a[sort] > b[sort] ? order : a[sort] < b[sort] ? -order : 0))
+      .sort((a, b) => order * compare(a[sort], b[sort]))
     const items = matches.slice((page - 1) * pageSize, page * pageSize)
     return HttpResponse.json({ items, total: matches.length, page, pageSize })
   }),

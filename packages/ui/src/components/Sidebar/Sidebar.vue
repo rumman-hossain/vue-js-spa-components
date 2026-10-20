@@ -76,7 +76,7 @@ function link(item) {
           <component
             :is="link(item).tag"
             v-bind="link(item).bindings"
-            class="focus-ring flex min-h-11 items-center gap-3 rounded-control px-3 text-body text-label transition-colors duration-150 ease-standard hover:bg-tertiary-fill aria-[current=page]:bg-tint/15 aria-[current=page]:font-semibold aria-[current=page]:text-tint"
+            class="focus-ring flex min-h-11 items-center gap-3 rounded-control px-3 text-body text-label transition-colors duration-150 ease-standard hover:bg-tertiary-fill aria-[current=page]:bg-tint/12 aria-[current=page]:font-semibold aria-[current=page]:text-tint"
           >
             <span
               v-if="item.icon"
