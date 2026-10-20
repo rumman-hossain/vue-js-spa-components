@@ -1,0 +1,8 @@
+title = "vue-js-spa-components secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Mock fixtures use obviously fake tokens."
+paths = ['''apps/showcase/src/mocks/.*''']

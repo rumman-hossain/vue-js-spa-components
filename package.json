@@ -1,0 +1,62 @@
+{
+  "name": "vue-js-spa-components",
+  "private": true,
+  "type": "module",
+  "description": "Production-grade Vue 3 component library and showcase SPA: accessible, tested, secure by default.",
+  "author": "MD Rumman Hossain",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rumman-hossain/vue-js-spa-components.git"
+  },
+  "packageManager": "pnpm@10.34.6",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter showcase dev",
+    "build": "pnpm -r build",
+    "preview": "pnpm --filter showcase preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "pnpm --filter showcase test:e2e",
+    "test:a11y": "pnpm --filter showcase test:e2e --grep @a11y",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:names": "node scripts/check-names.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm check:names && pnpm test:run",
+    "changeset": "changeset",
+    "release": "pnpm build && changeset publish",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml,html}": "prettier --write"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.3",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.11.1",
+    "eslint-plugin-vuejs-accessibility": "^2.6.2",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "jsdom": "^30.1.3",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
+  }
+}
