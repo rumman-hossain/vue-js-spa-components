@@ -5,7 +5,7 @@ const props = defineProps({
   title: { type: String, default: undefined },
   description: { type: String, default: undefined },
   headingLevel: {
-    type: /** @type {import('vue').PropType<2 | 3 | 4 | 5 | 6>} */ (Number),
+    type: /** @type {import('vue').PropType<1 | 2 | 3 | 4 | 5 | 6>} */ (Number),
     default: 2,
   },
   /** Translucent surface for cards placed over imagery or color. */

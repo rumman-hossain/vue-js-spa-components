@@ -33,4 +33,9 @@ describe('Card', () => {
     expect(screen.getByText('Just content')).toBeInTheDocument()
     await expectNoA11yViolations(container)
   })
+
+  it('supports a level 1 heading for full-page cards', () => {
+    render(Card, { props: { title: 'Overview', headingLevel: 1 } })
+    expect(screen.getByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument()
+  })
 })

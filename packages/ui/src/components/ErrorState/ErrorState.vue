@@ -12,7 +12,7 @@ defineProps({
   /** Announces the error immediately. Use when it replaces content the user was waiting for. */
   alert: { type: Boolean, default: false },
   headingLevel: {
-    type: /** @type {import('vue').PropType<2 | 3 | 4 | 5 | 6>} */ (Number),
+    type: /** @type {import('vue').PropType<1 | 2 | 3 | 4 | 5 | 6>} */ (Number),
     default: 2,
   },
 })

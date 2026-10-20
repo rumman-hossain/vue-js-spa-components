@@ -21,4 +21,9 @@ describe('EmptyState', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Empty' })).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
+
+  it('supports a level 1 heading for full-page empty states', () => {
+    render(EmptyState, { props: { title: 'Nothing here', headingLevel: 1 } })
+    expect(screen.getByRole('heading', { level: 1, name: 'Nothing here' })).toBeInTheDocument()
+  })
 })

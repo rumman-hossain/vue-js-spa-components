@@ -37,4 +37,11 @@ describe('ErrorState', () => {
     await rerender({ retryLabel: '' })
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
+
+  it('supports a level 1 heading for full-page errors', () => {
+    render(ErrorState, { props: { title: 'Page failed to load', headingLevel: 1 } })
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Page failed to load' }),
+    ).toBeInTheDocument()
+  })
 })

@@ -3,7 +3,7 @@ defineProps({
   title: { type: String, required: true },
   description: { type: String, default: undefined },
   headingLevel: {
-    type: /** @type {import('vue').PropType<2 | 3 | 4 | 5 | 6>} */ (Number),
+    type: /** @type {import('vue').PropType<1 | 2 | 3 | 4 | 5 | 6>} */ (Number),
     default: 2,
   },
 })
