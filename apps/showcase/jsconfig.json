@@ -12,8 +12,11 @@
     "maxNodeModuleJsDepth": 0,
     "resolveJsonModule": true,
     "types": ["vite/client", "node"],
-    "paths": { "@/*": ["./src/*"] }
+    "paths": {
+      "@/*": ["./src/*"],
+      "@vue-js-spa-components/ui": ["../../packages/ui/src/index.js"]
+    }
   },
-  "include": ["src/**/*.js", "src/**/*.vue"],
+  "include": ["src/**/*.js", "src/**/*.vue", "src/**/*.d.ts", "tests/**/*.js", "tests/**/*.d.ts"],
   "exclude": ["dist", "node_modules"]
 }

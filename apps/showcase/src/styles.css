@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+@import '@vue-js-spa-components/ui/theme.css';
+
+/* Scan the library sources too, so utilities used by components are generated. */
+@source '../../../packages/ui/src';
