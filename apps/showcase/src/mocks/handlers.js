@@ -82,6 +82,19 @@ function validateUserInput(body, excludeId) {
   }
 }
 
+/**
+ * Decodes an uploaded CSV. Files exported from Japanese Excel are often Shift_JIS, so strict UTF-8
+ * is tried first and Shift_JIS is the fallback. A UTF-8 byte-order mark is dropped.
+ * @param {ArrayBuffer} buffer
+ */
+export function decodeCsv(buffer) {
+  try {
+    return new TextDecoder('utf-8', { fatal: true, ignoreBOM: false }).decode(buffer)
+  } catch {
+    return new TextDecoder('shift_jis').decode(buffer)
+  }
+}
+
 export const handlers = [
   // Runs first for every API call: realistic latency plus faults injected from the Error lab.
   http.all(api('/*'), async () => {
@@ -161,6 +174,62 @@ export const handlers = [
       .sort((a, b) => order * compare(a[sort], b[sort]))
     const items = matches.slice((page - 1) * pageSize, page * pageSize)
     return HttpResponse.json({ items, total: matches.length, page, pageSize })
+  }),
+
+  http.post(api('/users/import'), async ({ request }) => {
+    const actor = authenticate(request)
+    if (!actor) return fail(401, 'unauthorized', 'Sign in required.')
+    if (actor.role !== 'admin') return fail(403, 'forbidden', 'Only admins can import users.')
+    const entry = (await request.formData()).get('file')
+    // Duck-typed: the File class differs between the browser, jsdom and Node.
+    if (!entry || typeof entry === 'string') {
+      return fail(422, 'validation_failed', 'No file.', { fieldErrors: { file: 'required' } })
+    }
+    const file = /** @type {Blob} */ (entry)
+    if (file.size > 1024 * 1024) return fail(413, 'file_too_large', 'File is too large.')
+
+    const lines = decodeCsv(await file.arrayBuffer())
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+    const header = lines[0]?.toLowerCase().replaceAll(' ', '')
+    if (header !== 'name,email,role') {
+      return fail(422, 'validation_failed', 'Unexpected header.', {
+        fieldErrors: { file: 'header' },
+      })
+    }
+
+    /** @type {Array<{ line: number, reason: 'invalid' | 'taken' | 'duplicate' }>} */
+    const skipped = []
+    const seen = new Set()
+    let imported = 0
+    lines.slice(1).forEach((line, index) => {
+      if (!line) return
+      const lineNumber = index + 2
+      const [name = '', email = '', role = 'viewer'] = line.split(',').map((cell) => cell.trim())
+      const normalized = email.toLowerCase()
+      if (seen.has(normalized)) return skipped.push({ line: lineNumber, reason: 'duplicate' })
+      seen.add(normalized)
+      const result = validateUserInput({
+        name,
+        email: normalized,
+        role,
+        status: 'invited',
+        monthlyQuota: 10_000,
+      })
+      if ('fieldErrors' in result) {
+        return skipped.push({
+          line: lineNumber,
+          reason: result.fieldErrors.email === 'taken' ? 'taken' : 'invalid',
+        })
+      }
+      db.users.unshift({
+        id: `u_${crypto.randomUUID().slice(0, 8)}`,
+        createdAt: new Date().toISOString(),
+        ...result.input,
+      })
+      imported += 1
+    })
+    return HttpResponse.json({ imported, skipped })
   }),
 
   http.get(api('/users/:id'), ({ request, params }) => {

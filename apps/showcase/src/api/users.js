@@ -1,4 +1,5 @@
 import { http } from './client.js'
+import { uploadFile } from './upload.js'
 
 /**
  * @typedef {{
@@ -13,6 +14,7 @@ import { http } from './client.js'
  * @typedef {Omit<User, 'id' | 'createdAt'>} UserInput
  * @typedef {{ page?: number, pageSize?: number, search?: string, sort?: string, order?: 'asc' | 'desc' }} UserQuery
  * @typedef {{ items: User[], total: number, page: number, pageSize: number }} Page
+ * @typedef {{ imported: number, skipped: Array<{ line: number, reason: 'invalid' | 'taken' | 'duplicate' }> }} ImportResult
  */
 
 export const usersApi = {
@@ -26,6 +28,12 @@ export const usersApi = {
   update: (id, input) => http.put(`/users/${encodeURIComponent(id)}`, input),
   /** @param {string} id @returns {Promise<void>} */
   remove: (id) => http.delete(`/users/${encodeURIComponent(id)}`),
+  /**
+   * @param {File} file CSV with a header row: name,email,role
+   * @param {{ onProgress?: (percent: number) => void, signal?: AbortSignal }} [options]
+   * @returns {Promise<ImportResult>}
+   */
+  importCsv: (file, options) => uploadFile('/users/import', file, options),
   /**
    * @param {string} email
    * @param {string} [excludeId]

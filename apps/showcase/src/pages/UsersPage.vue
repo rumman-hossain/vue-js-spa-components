@@ -12,12 +12,13 @@ import {
   useConfirm,
   useToast,
 } from '@vue-js-spa-components/ui'
-import { Pencil, Plus, Trash2, Users } from 'lucide-vue-next'
+import { FileUp, Pencil, Plus, Trash2, Users } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { usersApi } from '@/api/users.js'
 import { useErrorMessage } from '@/app/errors.js'
+import ImportUsersSheet from '@/components/ImportUsersSheet.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { useAuthStore } from '@/stores/auth.js'
 
@@ -35,6 +36,13 @@ const confirm = useConfirm()
 const errorMessage = useErrorMessage()
 
 const canEdit = computed(() => auth.hasRole('admin'))
+const importOpen = ref(false)
+
+/** @param {number} count */
+function onImported(count) {
+  toast.show({ tone: 'success', title: t('users.import.toast', { count }) })
+  users.execute()
+}
 
 /** The URL is the source of truth, so reloads, shared links and Back all restore the view. */
 const query = computed(() => {
@@ -166,6 +174,10 @@ async function removeUser(id) {
   <div>
     <PageHeader :title="t('users.title')" :subtitle="t('users.subtitle')">
       <template v-if="canEdit" #actions>
+        <Button variant="tinted" @click="importOpen = true">
+          <template #leading><FileUp :size="16" aria-hidden="true" /></template>
+          {{ t('users.import.open') }}
+        </Button>
         <Button @click="router.push({ name: 'user-create' })">
           <template #leading><Plus :size="16" aria-hidden="true" /></template>
           {{ t('users.add') }}
@@ -238,6 +250,8 @@ async function removeUser(id) {
         </EmptyState>
       </template>
     </DataTable>
+
+    <ImportUsersSheet v-if="canEdit" v-model:open="importOpen" @imported="onImported" />
 
     <Pagination
       v-if="users.data.value && users.data.value.total > 0"

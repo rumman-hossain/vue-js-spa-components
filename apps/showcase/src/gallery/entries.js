@@ -525,6 +525,108 @@ export const entries = [
 
   // Selection
   {
+    id: 'file-upload',
+    name: 'FileUpload',
+    category: 'Inputs',
+    kind: 'component',
+    summary:
+      'File picker with drag and drop, type/size/count checks, image previews and per-file progress set by the parent.',
+    exports: ['FileUpload', 'formatBytes', 'matchesAccept'],
+    demo: () => import('./demos/FileUploadDemo.vue'),
+    code: code('FileUploadDemo'),
+    props: [
+      FIELD.label,
+      FIELD.labelHidden,
+      FIELD.hint,
+      FIELD.error,
+      FIELD.required,
+      FIELD.requiredLabel,
+      FIELD.id,
+      {
+        name: 'accept',
+        type: 'string',
+        default: '—',
+        description:
+          'Same syntax as the native attribute, e.g. `"image/*,.csv"`. Also enforced for dropped files.',
+      },
+      {
+        name: 'multiple',
+        type: 'boolean',
+        default: 'false',
+        description: 'Allows several files. Without it a new file replaces the current one.',
+      },
+      {
+        name: 'maxSize',
+        type: 'number',
+        default: '—',
+        description: 'Maximum size per file in bytes.',
+      },
+      {
+        name: 'maxFiles',
+        type: 'number',
+        default: '—',
+        description: 'Maximum number of files in the list.',
+      },
+      {
+        name: 'disabled',
+        type: 'boolean',
+        default: 'false',
+        description: 'Disables picking and removing.',
+      },
+      {
+        name: 'previews',
+        type: 'boolean',
+        default: 'true',
+        description: 'Thumbnails for images. Object URLs are revoked on remove and unmount.',
+      },
+      {
+        name: 'locale',
+        type: 'string',
+        default: '—',
+        description: 'Locale for file sizes (`1.5 kB` / `1,5 kB`).',
+      },
+      {
+        name: 'dropLabel',
+        type: 'string',
+        default: "'Drag files here, or'",
+        description: 'Text in the drop zone.',
+      },
+      {
+        name: 'browseLabel',
+        type: 'string',
+        default: "'choose files'",
+        description: 'Text of the browse link.',
+      },
+      {
+        name: 'messages',
+        type: 'object',
+        default: '{}',
+        description:
+          'Functions that build the remove label, rejection, added and status copy — pass translations here.',
+      },
+      model(
+        'UploadItem[]',
+        '[]',
+        'The file list. Each item has `file`, `status` (`ready | uploading | done | error`), `progress` and optional `error`; the parent updates them while uploading.',
+      ),
+    ],
+    events: [
+      { name: 'add', payload: 'UploadItem[]', description: 'Files that passed the checks.' },
+      { name: 'remove', payload: 'UploadItem', description: 'A file the user removed.' },
+      {
+        name: 'reject',
+        payload: '{ file, reason: "type" | "size" | "count" }[]',
+        description: 'Files that failed a check.',
+      },
+    ],
+    a11y: [
+      'A native `<input type="file">` is the keyboard and screen-reader path; it is labelled by the field label only, and drag and drop is an extra for pointer users.',
+      'Added and rejected files are announced in a polite live region; rejection reasons are also listed visibly.',
+      'Each file has a labelled remove button and, while uploading, a `progressbar` named after the file.',
+      'After removing a file, focus returns to the input instead of being lost.',
+    ],
+  },
+  {
     id: 'toggle',
     name: 'Toggle',
     category: 'Selection',

@@ -187,6 +187,9 @@ export function createHttpClient(config) {
 
   return {
     request,
+    /** Shared refresh, for transports that cannot go through `request` (e.g. XHR uploads). */
+    refresh: refreshOnce,
+    baseUrl,
     /** @template T @param {string} path @param {RequestOptions} [options] */
     get: (path, options) =>
       /** @type {Promise<T>} */ (request(path, { ...options, method: 'GET' })),

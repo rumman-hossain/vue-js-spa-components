@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Fails when a banned name appears in any tracked or untracked (non-ignored) file
- * or in the commit history of the current branch.
+ * Fails when the name of the admin template this project replaced appears in any tracked or
+ * untracked (non-ignored) file or in the commit history of the current branch.
  *
  * The banned names are stored base64-encoded so this file never matches itself.
  */

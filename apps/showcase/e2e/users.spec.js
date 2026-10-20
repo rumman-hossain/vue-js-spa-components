@@ -39,6 +39,38 @@ test.describe('users', () => {
     expect(await page.evaluate(() => window.scrollY)).toBe(0)
   })
 
+  test('imports users from a CSV with progress and a per-line report', async ({ page }) => {
+    await signIn(page, undefined, '/users')
+    await page.getByRole('button', { name: 'Import CSV' }).click()
+    const sheet = page.getByRole('dialog', { name: 'Import users' })
+    await sheet.getByLabel('CSV file').setInputFiles({
+      name: 'new-users.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(
+        'name,email,role\n高橋 美咲,misaki.e2e@example.com,viewer\n,bad@example.com,viewer\n',
+      ),
+    })
+    await expect(sheet.getByText('new-users.csv')).toBeVisible()
+    await sheet.getByRole('button', { name: 'Import', exact: true }).click()
+    await expect(
+      sheet.getByRole('status').filter({ hasText: '1 imported, 1 skipped.' }),
+    ).toBeVisible()
+    await expect(sheet.getByText('Line 3: missing name or invalid email')).toBeVisible()
+    await expect(page.getByRole('status').filter({ hasText: '1 users imported' })).toBeVisible()
+  })
+
+  test('the upload rejects files that are not CSV', async ({ page }) => {
+    await signIn(page, undefined, '/users')
+    await page.getByRole('button', { name: 'Import CSV' }).click()
+    const sheet = page.getByRole('dialog', { name: 'Import users' })
+    await sheet
+      .getByLabel('CSV file')
+      .setInputFiles({ name: 'photo.png', mimeType: 'image/png', buffer: Buffer.from([1, 2, 3]) })
+    await expect(
+      sheet.getByRole('listitem').filter({ hasText: 'photo.png is not a CSV file.' }),
+    ).toBeVisible()
+  })
+
   test('paginates on the server', async ({ page }) => {
     await signIn(page, undefined, '/users')
     await expect(page.getByText('Showing 1–10 of 57')).toBeVisible()

@@ -11,7 +11,7 @@ import '@vue-js-spa-components/ui/style.css'
 import { Button, NumberField, ToastProvider, useToast } from '@vue-js-spa-components/ui'
 ```
 
-- 38 components: inputs (including an IME-aware `NumberField`), selection controls, dialogs,
+- 39 components: inputs (including an IME-aware `NumberField` and a `FileUpload`), selection controls, dialogs,
   toasts, menus, tabs, combobox, data table, pagination, error boundary and an app shell.
 - 8 composables: `useForm` (Standard Schema validation), `useAsync`, `usePolling`, `useToast`,
   `useConfirm`, `useTheme`, `useFocusTrap`, `useClickOutside`.
